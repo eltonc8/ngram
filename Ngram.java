@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 
-public class Triagram {
+public class Ngram {
   public static void main (String[] args) throws IOException {
     BufferedReader inputStream = null;
     GramTable gramTable = new GramTable();
@@ -31,7 +31,7 @@ public class Triagram {
     output.add(gramTable.returnWord(new String[]{output.get(0)}));
 
     String[] frame;
-    while(output.size() < 10){
+    while(output.size() < 100){
       frame = new String[]{ output.get( output.size() - 2), output.get( output.size() - 1) };
       output.add( gramTable.returnWord( frame ) );
     }
