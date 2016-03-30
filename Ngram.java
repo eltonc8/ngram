@@ -6,12 +6,12 @@ public class Ngram {
     BufferedReader inputStream = null;
     GramTable gramTable = new GramTable();
     int gramSize = 3;
+    String line, nextWord;
+    String[] words;
 
     try {
       inputStream = new BufferedReader(new FileReader("kasich_ohio_speech.txt"));
 
-      String line;
-      String[] words;
       int idx;
       while ((line = inputStream.readLine()) != null) {
         words = line.split("\\s+");
@@ -27,24 +27,24 @@ public class Ngram {
       }
     }
 
-    ArrayList<String> paragraphs = new ArrayList<String>();
-    ArrayList<String> paragraph;
-    String[] frame;
-    String nextWord;
+    ArrayList<String> paragraph, paragraphs = new ArrayList<String>();
 
     while(paragraphs.size() < 5){
       paragraph = new ArrayList<String>();
-      paragraph.add(gramTable.returnWord(new String[]{}));
-      paragraph.add(gramTable.returnWord(new String[]{paragraph.get(0)}));
+      nextWord = "";
+      while(!(nextWord.matches("^[A-Z0-9].*"))) nextWord = gramTable.returnWord(new String[]{});
 
-      while(paragraph.size() < 100){
-        frame = new String[]{ paragraph.get( paragraph.size() - 2), paragraph.get( paragraph.size() - 1) };
-        nextWord = gramTable.returnWord(frame);
+      paragraph.add(nextWord);
+      paragraph.add(gramTable.returnWord(new String[]{nextWord}));
+
+      while(paragraph.size() < 360){
+        words = new String[]{ paragraph.get( paragraph.size() - 2), paragraph.get( paragraph.size() - 1) };
+        nextWord = gramTable.returnWord(words);
         if (nextWord == null) {
           paragraphs.add(String.join(" ", paragraph));
           break;
         } else {
-          paragraph.add( gramTable.returnWord( frame ) );
+          paragraph.add( gramTable.returnWord( words ) );
         }
       }
     }
