@@ -5,9 +5,10 @@ public class Ngram {
   public static void main (String[] args) throws IOException {
     BufferedReader inputStream = null;
     GramTable gramTable = new GramTable();
+    int gramSize = 3;
 
     try {
-      inputStream = new BufferedReader(new FileReader("sample_text.txt"));
+      inputStream = new BufferedReader(new FileReader("kasich_ohio_speech.txt"));
 
       String line;
       String[] words;
@@ -15,8 +16,8 @@ public class Ngram {
       while ((line = inputStream.readLine()) != null) {
         words = line.split("\\s+");
         idx = 0;
-        while (idx + 2 < words.length) {
-          gramTable.put( Arrays.copyOfRange(words, idx, idx + 3) );
+        while (idx + gramSize <= words.length) {
+          gramTable.put( Arrays.copyOfRange(words, idx, idx + gramSize) );
           idx++;
         }
       }
@@ -26,16 +27,28 @@ public class Ngram {
       }
     }
 
-    ArrayList<String> output = new ArrayList<String>();
-    output.add(gramTable.returnWord(new String[]{}));
-    output.add(gramTable.returnWord(new String[]{output.get(0)}));
-
+    ArrayList<String> paragraphs = new ArrayList<String>();
+    ArrayList<String> paragraph;
     String[] frame;
-    while(output.size() < 100){
-      frame = new String[]{ output.get( output.size() - 2), output.get( output.size() - 1) };
-      output.add( gramTable.returnWord( frame ) );
+    String nextWord;
+
+    while(paragraphs.size() < 5){
+      paragraph = new ArrayList<String>();
+      paragraph.add(gramTable.returnWord(new String[]{}));
+      paragraph.add(gramTable.returnWord(new String[]{paragraph.get(0)}));
+
+      while(paragraph.size() < 100){
+        frame = new String[]{ paragraph.get( paragraph.size() - 2), paragraph.get( paragraph.size() - 1) };
+        nextWord = gramTable.returnWord(frame);
+        if (nextWord == null) {
+          paragraphs.add(String.join(" ", paragraph));
+          break;
+        } else {
+          paragraph.add( gramTable.returnWord( frame ) );
+        }
+      }
     }
 
-    System.out.println( String.join( " ", output) );
+    System.out.println( String.join( "\n", paragraphs) );
   } // end main method
 } // end class
